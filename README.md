@@ -2,7 +2,7 @@
 ## BioML Challenge 2024: Bits to Binders
 
 <p align="center">
-  <img src="./figures/binder_with_CD20_in_membrane.png" alt="Designed binders with CD20 in a membrane" width="700px" align="middle"/>
+  <img src="./figs/binder_with_CD20_in_membrane.png" alt="Designed binders with CD20 in a membrane" width="700px" align="middle"/>
 </p>
 
 ## Team Members
@@ -16,7 +16,7 @@ text text text...
 ## Workflow
 
 <p align="center">
-  <img src="./figures/pipeline_figure.png" alt="Steps of our design process" width="1100px" align="middle"/>
+  <img src="./figs/pipeline_figure.png" alt="Steps of our design process" width="1100px" align="middle"/>
 </p>
 
 text text text...
