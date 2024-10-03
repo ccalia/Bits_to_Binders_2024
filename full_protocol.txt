@@ -1,0 +1,360 @@
+
+EXAMPLE WORKFLOW FOR ONE BATCH:
+
+(1) Run RFdiffusion
+(2) Filter backbones: python ../Filter_RFD_backbones_with_membrane_check.py RFDX/outputs Filtering_with_membrane_clashes/test15RFDX/FILTERED_test15RFDX_outputs_withmembcheck 49 23 4 3 5 30 3 ../6y97_in_membrane_no_solvent.pdb 29 70 10
+(3) Use Run_ProteinMPNN_and_AlphaFold2_for_RFdiffusion_Binders_with_ColabDesign_gdrive.ipynb to generate and screen 64 seqs each, T=0.000001, original ProteinMPNN weights, cysteine excluded. AlphaFold2 settings: model_1_ptm with initial guess, target templating, three recycles, and no MSAs.
+(4) Check results for "near hits": python ../../../Filter_CD_AF_output_fasta_RFD_pdbs.py FILTERED_test15RFDX_outputs_withmembcheck_ColabDesign/full_fasta.fasta FILTERED_test15RFDX_outputs_withmembcheck FILTERED_test15RFDX_outputs_withmembcheck_ColabDesign/af2_pdbs cdfiltered_22_8_FILTERED_test15RFDX_outputs_withmembcheck_ColabDesign 0 0 22 8 None
+(5) For any backbones that gave near hits, do another round with Run_ProteinMPNN_and_AlphaFold2_for_RFdiffusion_Binders_with_ColabDesign_gdrive.ipynb: 64 seqs each, T=0.1
+(6) Check round 2 results for near hits: python ../../../../Filter_CD_AF_output_fasta_RFD_pdbs.py FILTERED_test15RFDX_outputs_withmembcheck_ColabDesign_ROUND2/full_fasta.fasta passing_RFD_pdbs FILTERED_test15RFDX_outputs_withmembcheck_ColabDesign_ROUND2/af2_pdbs cdfiltered_22_8_FILTERED_test15RFDX_outputs_withmembcheck_ColabDesign_ROUND2 0 0 22 8 _R2
+(7) Additional sequences (and sometimes partial diffusion) for some promising backbones
+
+
+
+ALL RFDIFFUSION DETAILS:
+
+Made motif scaffolded target structure (RFD_test15ms_7.pdb) from PDB 6VJA with:
+
+python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[C72-187/15-30/D161-188]' inference.output_prefix=outputs/RFD_test10ms inference.num_designs=10 inference.input_pdb=CD20_6vja_chainCres72-187_chainDres161-188.pdb
+
+python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-12/15-25/A68-161]' inference.output_prefix=outputs/RFD_test15ms inference.num_designs=8 inference.input_pdb=RFD_test10ms_9.pdb
+
+
+
+
+Generated binder backbone batches using RFD_test15ms_7.pdb as target:
+
+-RFD2: 5 hotspots, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD2_test15 inference.num_designs=300 'ppi.hotspot_res=[A5,A50,A59,A68,A111]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt
+
+126 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD3: 4 hotspots, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD3_test15 inference.num_designs=300 'ppi.hotspot_res=[A50,A59,A68,A111]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt
+
+94 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD4: 8 hotspots, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD4_test15 inference.num_designs=300 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt
+
+133 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD5: same hotspots as RFD3, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD5_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A68,A111]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt
+
+176 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD6: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD6_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt
+
+208 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD7: same hotspots as RFD3, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD7_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A68,A111]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt
+
+131 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD8: same hotspots as RFD4, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD8_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+164 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD9: same hotspots as RFD4, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD9_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+160 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD10: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD10_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+229 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD11: same hotspots as RFD4, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD11_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+182 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD12: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD12_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+227 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD13: 100 backbones from partial diffusion on RFD4_test15_281.pdb, T=25, noise 0.5, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD13_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD4_test15_281.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD14: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD14_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+213 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD15: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD15_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+219 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD16: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD16_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+214 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD17: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD17_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+211 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD18: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD18_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+204 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD19: 100 backbones from partial diffusion on RFD6_test15_426.pdb, T=25, noise 0.5, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD19_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD6_test15_426.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD20: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD20_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+212 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), no backbones gave seqs with ipae < 22 and rmsd < 8
+
+
+-RFD21: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD21_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+237 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD22: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD22_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+222 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD23: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD23_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+218 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD24: same hotspots as RFD4, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD24_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+183 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD25: 100 backbones from partial diffusion on RFD14_test15_7.pdb, T=25, noise 0.5, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD25_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD14_test15_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD26: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD26_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+193 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD27: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD27_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+208 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD28: 100 backbones from partial diffusion on RFD17_test15_32.pdb, T=25, noise 0.5, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD28_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD17_test15_32.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD29: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD29_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+222 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD30: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD30_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+200 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD31: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD31_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+218 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD32: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD32_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+224 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD33: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD33_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+230 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD34: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD34_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+230 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD35: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD35_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+229 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD36: same hotspots as RFD4, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD36_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+139 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD37: same hotspots as RFD4, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD37_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+172 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD38: 100 backbones from partial diffusion on RFD15_test15_168.pdb, T=25, noise 0.5, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD38_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD15_test15_168.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD39: 100 backbones from partial diffusion on RFD30_test15_215.pdb, T=25, noise 1.0, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD39_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD30_test15_215.pdb denoiser.noise_scale_ca=1.0 denoiser.noise_scale_frame=1.0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), no backbones gave seqs with ipae < 22 and rmsd < 8
+
+
+-RFD40: 100 backbones from partial diffusion on RFD33_test15_232.pdb, T=25, noise 0.5, complex base params instead of beta params, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD40_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD33_test15_232.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_base_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), no backbones gave seqs with ipae < 22 and rmsd < 8
+
+
+-RFD41: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD41_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+249 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD42: 10 hotspots, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD42_test15 inference.num_designs=500 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+253 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD43: same hotspots as RFD42, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD43_test15 inference.num_designs=500 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+245 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD44: 100 backbones from partial diffusion on RFD33_test15_232.pdb, T=25, noise 0.5, same as RFD40 but with beta params, not filtered; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD44_test15 inference.num_designs=100 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=RFD33_test15_232.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), no backbones gave seqs with ipae < 22 and rmsd < 8
+
+
+-RFD45: same hotspots as RFD42, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD45_test15 inference.num_designs=500 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+245 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD46: same hotspots as RFD42, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD46_test15 inference.num_designs=500 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+271 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD47: same hotspots as RFD42, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD47_test15 inference.num_designs=500 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+232 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD48: 12 hotspots (trying to encourage binders that envelope part of ECL2), noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD48_test15 inference.num_designs=650 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A61,A62,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+343 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD49: 100 backbones from partial diffusion on RFD43_test15_340.pdb, T=25, noise 0.5, not filtered, original hotspots specified correctly this time; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[80-80/0 B81-201]' inference.output_prefix=outputs/RFD49_test15 inference.num_designs=100 'ppi.hotspot_res=[B85,B130,B132,B135,B139,B140,B147,B148,B191,B192]' inference.input_pdb=RFD43_test15_340.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False diffuser.partial_T=25
+
+Did ProteinMPNN/AF for all (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD50: same hotspots as RFD48, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD50_test15 inference.num_designs=650 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A61,A62,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+355 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD51: same hotspots as RFD48, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD51_test15 inference.num_designs=650 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A61,A62,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+329 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD52: same hotspots as RFD42, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD52_test15 inference.num_designs=500 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+233 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD53: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD53_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+221 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD54: same hotspots as RFD42, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD54_test15 inference.num_designs=500 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+268 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD55: same hotspots as RFD4, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD55_test15 inference.num_designs=500 'ppi.hotspot_res=[A50,A59,A60,A67,A68,A103,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+202 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD56: same hotspots as RFD42, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD56_test15 inference.num_designs=650 'ppi.hotspot_res=[A5,A50,A52,A55,A59,A60,A67,A68,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+330 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD57: 12 new hotspots (to encourage more contacts with the other monomer's ECL2), noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD57_test15 inference.num_designs=650 'ppi.hotspot_res=[A50,A52,A68,A104,A105,A106,A107,A108,A109,A110,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+351 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD58: same hotspots as RFD57, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD58_test15 inference.num_designs=650 'ppi.hotspot_res=[A50,A52,A68,A104,A105,A106,A107,A108,A109,A110,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+349 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD59: same hotspots as RFD57, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD59_test15 inference.num_designs=650 'ppi.hotspot_res=[A50,A52,A68,A104,A105,A106,A107,A108,A109,A110,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+330 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD60: same hotspots as RFD57, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD60_test15 inference.num_designs=550 'ppi.hotspot_res=[A50,A52,A68,A104,A105,A106,A107,A108,A109,A110,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+294 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD61: same hotspots as RFD57, noise 0; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD61_test15 inference.num_designs=550 'ppi.hotspot_res=[A50,A52,A68,A104,A105,A106,A107,A108,A109,A110,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0 denoiser.noise_scale_frame=0 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+285 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+-RFD62: same hotspots as RFD57, noise 0.5; python /home/ccalia/Codes/RFdiffusion/scripts/run_inference.py 'contigmap.contigs=[A1-121/0 80-80]' inference.output_prefix=outputs/RFD62_test15 inference.num_designs=650 'ppi.hotspot_res=[A50,A52,A68,A104,A105,A106,A107,A108,A109,A110,A111,A112]' inference.input_pdb=../RFD_test15ms_7.pdb denoiser.noise_scale_ca=0.5 denoiser.noise_scale_frame=0.5 inference.ckpt_override_path=/home/ccalia/Codes/RFdiffusion/models/Complex_beta_ckpt.pt inference.write_trajectory=False
+
+285 passed filtering, did ProteinMPNN/AF for those (64 seqs each with T=0.000001), for any backbones giving seqs with ipae < 22 and rmsd < 8 redid ProteinMPNN/AF (64 seqs each with T=0.1)
+
+
+
+Generated additional seqs for backbones from these batches:
+RFD4
+RFD6
+RFD8
+RFD10
+RFD13
+RFD15
+RFD17
+RFD18
+RFD21
+RFD22
+RFD23
+RFD29
+RFD33
+RFD34
+RFD42
+RFD43
+RFD46
+RFD50
+RFD51
+RFD52
+RFD55
+RFD57
+RFD58
+RFD59
+
+
+
