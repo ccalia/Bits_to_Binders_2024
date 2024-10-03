@@ -39,14 +39,14 @@ Expanding the set of known protein binders to human CD20 holds promise for medic
 
 ## References
 
-\[1\] [Rougé et al. Science, 2020.] (https://www.science.org/doi/10.1126/science.aaz9356)
-\[2\] [Varadi et al. Nucleic Acids Research, 2022.] (https://academic.oup.com/nar/article/50/D1/D439/6430488)
-\[3\] [Tunyasuvunakool et al. Nature, 2021.] (https://www.nature.com/articles/s41586-021-03828-1)
-\[4\] [Watson et al. Nature, 2023.] (https://www.nature.com/articles/s41586-023-06415-8)
-\[5\] [Cock et al. Bioinformatics, 2009.] (https://academic.oup.com/bioinformatics/article/25/11/1422/330687)
-\[6\] [Newport et al. Nucleic Acids Research, 2019.] (https://academic.oup.com/nar/article/47/D1/D390/5173663)
-\[7\] [Ovchinnikov et al. ColabDesign Framework.] (https://github.com/sokrypton/ColabDesign)
-\[8\] [Dauparas et al. Science, 2022.] (https://www.science.org/doi/full/10.1126/science.add2187)
-\[9\] [Jumper et al. Nature, 2021.] (https://www.nature.com/articles/s41586-021-03819-2)
-\[10\] [Bennett et al. Nature Communications, 2023.] (https://www.nature.com/articles/s41467-023-38328-5)
+\[1\] [Rougé et al. Science, 2020.](https://www.science.org/doi/10.1126/science.aaz9356)\
+\[2\] [Varadi et al. Nucleic Acids Research, 2022.](https://academic.oup.com/nar/article/50/D1/D439/6430488)\
+\[3\] [Tunyasuvunakool et al. Nature, 2021.](https://www.nature.com/articles/s41586-021-03828-1)\
+\[4\] [Watson et al. Nature, 2023.](https://www.nature.com/articles/s41586-023-06415-8)\
+\[5\] [Cock et al. Bioinformatics, 2009.](https://academic.oup.com/bioinformatics/article/25/11/1422/330687)\
+\[6\] [Newport et al. Nucleic Acids Research, 2019.](https://academic.oup.com/nar/article/47/D1/D390/5173663)\
+\[7\] [Ovchinnikov et al. ColabDesign Framework.](https://github.com/sokrypton/ColabDesign)\
+\[8\] [Dauparas et al. Science, 2022.](https://www.science.org/doi/full/10.1126/science.add2187)\
+\[9\] [Jumper et al. Nature, 2021.](https://www.nature.com/articles/s41586-021-03819-2)\
+\[10\] [Bennett et al. Nature Communications, 2023.](https://www.nature.com/articles/s41467-023-38328-5)
 
