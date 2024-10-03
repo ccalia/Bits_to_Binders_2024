@@ -1,5 +1,5 @@
-# Team "Tumor Inhibitors"
-## BioML Challenge 2024: Bits to Binders
+# BioML Challenge 2024: Bits to Binders
+## Team Name: "Tumor Inhibitors"
 
 <p align="center">
   <img src="./figs/binder_with_CD20_in_membrane.png" alt="Designed binders with CD20 in a membrane" width="700px" align="middle"/>
